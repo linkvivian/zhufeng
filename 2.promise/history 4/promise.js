@@ -1,36 +1,41 @@
 const PENDING = "PENDING";
 const SUCCESS = "FULFILLED";
 const FAIL = "REJECTED";
-// 严谨 🇬应该判断 别人的promise 如果失败了就不能在调用成功 如果成功了不能在调用失败
+// 返还的那个新的promise x 是then方法中的返回值 
+// let x = 1;
+// Object.defineProperty(obj,'then',{
+//   get(){
+//     x++;
+//     if(x ===2){
+//       throw new Error();
+//     }
+//   }
+// });
 
-
-function resolvePromise(promise2, x,resolve,reject) { 
+function resolvePromise(promise2, x,resolve,reject) { // 考虑的非常全面
     if(promise2 === x){
        return reject(new TypeError('TypeError: Chaining cycle detected for promise #<Promise>'));
     }
-    let called;
+    // 判断x的类型
+    // promise 有n种实现 都符合了这个规范 兼容别人的promise
+
+    // 怎么判断 x是不是一个promise 看他有没有then方法
     if(typeof x === 'function' || (typeof x === 'object' && x != null)){
       try{
-        let then = x.then;  // then 可能是getter object.defineProperty
-        if(typeof then === 'function'){  // {then:null}
-           then.call(x,y=>{ 
-             if(called) return; // 1)
-             called = true;
-              resolvePromise(promise2,y,resolve,reject); 
+        let then = x.then; // 去then方法可能会出错
+        if(typeof then === 'function'){ // 我就认为他是一个promise
+           then.call(x,y=>{ // 如果promise是成功的就把结果向下传，如果失败的就让下一个人也失败
+              resolvePromise(promise2,y,resolve,reject); // 递归
            },r=>{
-             if(called) return; // 2)
-             called = true;
               reject(r);
-           }) 
-        }else{ 
+           }) // 不要使用x.then否则会在次取值
+        }else{ // {then:()=>{}}
           resolve(x);
         }
       }catch(e){
-        if(called) return; // 3) 为了辨别这个promise 不能调用多次
-        called = true;
         reject(e);
       }
-    }else{
+    }else{ // x是个？ 常量 
       resolve(x);
     }
 }
@@ -61,15 +66,19 @@ class Promise {
       reject(e);
     }
   }
-  then(onFulfilled, onRejected) { // .catch(function(){}) .then(null,function)
-  onFulfilled = typeof onFulfilled === 'function'?onFulfilled:val=>val;
-  onRejected =  typeof onRejected === 'function'?onRejected:err=>{throw err}
+  // 同一个promise then 多次
+  then(onFulfilled, onRejected) {
     let promise2;
+    // 可以不停的调用then方法,返还了一个新的promise
+    // 异步的特点 等待当前主栈代码都执行后才执行
     promise2 = new Promise((resolve, reject) => {
       if (this.status === SUCCESS) {
         setTimeout(() => {
           try {
+            // 调用当前then方法的结果，来判断当前这个promise2 是成功还是失败
             let x = onFulfilled(this.value);
+            // 这里的x是普通值还是promise
+            // 如果是一个promise呢？
             resolvePromise(promise2, x, resolve, reject);
           } catch (err) {
             reject(err);
@@ -112,17 +121,5 @@ class Promise {
     return promise2;
   }
 }
-// 希望测试一下这个库是否符合我们的promise A+规范
-// promises-aplus-tests
-Promise.defer = Promise.deferred = function(){
-  let dfd = {};
-  dfd.promise = new Promise((resolve,reject)=>{
-    dfd.resolve = resolve;
-    dfd.reject = reject;
-  });
-  return dfd;
-}
-module.exports = Promise;
-// npm i promises-aplus-tests -g
 
-// promise 相关方法  generator
+module.exports = Promise;
