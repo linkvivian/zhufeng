@@ -9,5 +9,11 @@
 // promise
 // mutationObserver 微任务
 // setImmediate 立即
-// MessageChannel
+// MessageChannel 宏任务
 // setTimeout
+
+
+// 高程3 
+// 犀牛书
+
+// 你不知道js

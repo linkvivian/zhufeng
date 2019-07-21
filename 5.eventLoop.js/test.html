@@ -11,26 +11,26 @@
 
     </div>
     <script>
-        let worker = new Worker('./worker.js')
-        //postMessage onmessage
-        worker.onmessage = function(e){
-            console.log(e.data);
-        }
-        console.log('ok');
-        // webworker 单独开启一条线程 （只能计算使用 并不能操作dom）
-        // let channel = new MessageChannel();
-        // let port1 = channel.port1;
-        // let port2 = channel.port2;
-        // port2.postMessage('hello');
-        // port1.onmessage = function(e){
-        //     console.log(container.children);
+        // let worker = new Worker('./worker.js')
+        // //postMessage onmessage
+        // worker.onmessage = function(e){
+        //     console.log(e.data);
         // }
+        // console.log('ok');
+        // webworker 单独开启一条线程 （只能计算使用 并不能操作dom）
+        let channel = new MessageChannel();
+        let port1 = channel.port1;
+        let port2 = channel.port2;
+        port2.postMessage('hello');
+        port1.onmessage = function(e){
+            console.log(container.children);
+        }
         // port1.addEventListener('message',function(e){
         //    console.log(container.children);
         // })
-        // setTimeout(() => {
-        //     console.log('timeout')
-        // }, 0);
+        setTimeout(() => {
+            console.log('timeout')
+        }, 0);
         // let mutationObserver = new MutationObserver(function(){
         //     console.log(container.children);
         // })
