@@ -131,11 +131,11 @@ child.beforeCreate();
 
 // Promise.try
 function fn(){
-  throw new Error('err123');
+  //throw new Error('err123');
   // return new Promise((resolve,reject)=>{
   //   setTimeout(()=>{
   //    reject('err')
-  //   },1000)
+  //   },5000)
   // })
 }
 Promise.try = function(fn){
@@ -143,7 +143,7 @@ Promise.try = function(fn){
     resolve(fn())
   })
 }
-// 借助了promise的处理错误的特点
-Promise.try(fn).catch(err=>{
+// 借助了promise的处理错误的特点 同时可以捕获同步和异步
+Promise.try(fn).then(null,err=>{
     console.log(err);
 });

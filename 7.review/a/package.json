@@ -1,0 +1,18 @@
+{
+  "name": "my",
+  "version": "1.0.0",
+  "description": "",
+  "main": "a.js",
+  "bin": {
+    "hand": "./a.js"
+  },
+  "scripts": {
+    "mime": "mime",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "mime": "^2.4.4"
+  }
+}
