@@ -36,5 +36,7 @@ rs.on('close',function(){
     console.log('close');
 })
 // data / end
+// resume pause
+
 // 文件中有close / open
 // on("error")
