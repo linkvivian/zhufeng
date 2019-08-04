@@ -4,6 +4,7 @@ let response = {
         return this._body
     },
     set body(value){
+        this.res.statusCode = 200; // 如果你调用了ctx.body = 'xxx'
         this._body = value;
     }
 }

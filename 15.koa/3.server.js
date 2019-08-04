@@ -9,13 +9,15 @@ const logger = ()=>{
         },2000)
     })
 }
-app.use(async (ctx,next)=>{
+app.use( async (ctx,next)=>{
     console.log(1);
-    await next();
+    next();
+    next();
     console.log(2);
 })
 app.use(async (ctx,next)=>{
     console.log(3);
+    await logger();
     next();
     console.log(4);
 })
