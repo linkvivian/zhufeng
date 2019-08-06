@@ -42,6 +42,7 @@ module.exports = class  extends EventEmitter{
         // 作业：用reduce 实现这个逻辑
         // 在同一个方法中掉两次next 
         const  dispatch =()=>{ // dispatch执行后需要返回一个promise
+            console.log(index);
             // 如果最后一个use方法调用了next方法就结束即可
             if(index <= i ) return Promise.reject('multiple call next()')
             i = index;// 为了防止多次调用 多次调用index值不会发生变化，但是i第一次已经和index相等了，所以第二次在调用 i 和 index相等 就抛出错误
