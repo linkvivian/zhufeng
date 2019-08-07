@@ -21,3 +21,9 @@ app.use(async ctx=>{
     ctx.body = '你好'
 })
 app.listen(3000);
+
+
+// csrf xss (获取用户的cookie)
+// 钓鱼网站  referer  验证码
+// wifi 
+// 存到数据库 持久化
