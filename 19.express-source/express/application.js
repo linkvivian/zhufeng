@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
-const Router = require('./router')
+const Router = require('./router');
+const methods = require('methods'); // 第三方的模块
 function Application(){ // 提供一个创建应用的类
     // 路由和应用的分离 
     // this.routes = [
@@ -8,18 +9,34 @@ function Application(){ // 提供一个创建应用的类
     //         res.end(`Cannot ${req.method} ${req.url}`)
     //     }}
     // ];
-    this.router = new Router();
+
 }
-Application.prototype.get = function(path,...handler){
-    // 自己不再处理放置路由的逻辑 交给路由自己去管理
-    this.router.get(path,handler)
-    // this.router.push({
-    //     path,
-    //     method:'get',
-    //     handler
-    // });
+// 路由系统的懒加载
+Application.prototype.lazy_route = function(){
+    if(!this.router){
+        this.router = new Router();
+    }
 }
+Application.prototype.use = function(path,handler){
+    this.lazy_route(); // 确保路由已经产生了
+    // 交给路由来处理中间件的逻辑 
+    this.router.use(path,handler);
+}
+methods.forEach(method=>{
+    Application.prototype[method] = function(path,...handler){
+        this.lazy_route();
+        // 自己不再处理放置路由的逻辑 交给路由自己去管理
+        this.router[method](path,handler)
+        // this.router.push({
+        //     path,
+        //     method:'get',
+        //     handler
+        // });
+    }
+})
+
 Application.prototype.listen = function(){
+    this.lazy_route();
     http.createServer((req,res)=>{
         // 需要将req，res交给路由来处理 
         function done(){
