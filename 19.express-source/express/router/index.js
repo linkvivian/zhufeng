@@ -50,7 +50,7 @@ proto.handle_param = function(layer,req,res,out){
       param();
     }
   }
-  param();
+  param(); // 4.15 express 模板引擎 内置的中间件
   // /user/:id/:name => keys=>[{name:id},{name:name}]
 }
 proto.route = function(path) {
