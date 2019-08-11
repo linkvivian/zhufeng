@@ -16,6 +16,43 @@ function Router() { // let user = express.Router()
 }
 // 因为等会会调用router上的方法
 let proto = {};
+proto.paramsCallback = {};
+proto.param = function(key,handler){
+  // 发布订阅 {id:[fn,fn],name:[fn]}
+  (this.paramsCallback[key] || (this.paramsCallback[key]=[])).push(handler); // 订阅模式
+}
+proto.handle_param = function(layer,req,res,out){
+  // 需要将订阅好的执行
+  if(!layer.keys || layer.keys.length ==0){
+    return out(); // 当前没有需要执行的param方法
+  }
+  let keys = layer.keys.map(item=>item.name);
+  let idx = 0;
+  let key;
+  let callbacks;
+  let param =()=>{ // [id,name]
+    if(idx >= keys.length ) return out();
+    key = keys[idx++];
+    callbacks = this.paramsCallback[key];//id => [fn,fn]
+    if(!callbacks){
+      param()
+    }else{
+      execCallbck(); // 执行callback
+    }
+  }
+  let i = 0;
+  let execCallbck =()=>{
+    let fn = callbacks[i++];
+    if(fn){
+      fn(req,res,execCallbck,layer.params[key],key)
+    }else{
+      i = 0;
+      param();
+    }
+  }
+  param();
+  // /user/:id/:name => keys=>[{name:id},{name:name}]
+}
 proto.route = function(path) {
   let route = new Route(); // 创建一个route
   // 创建一个Layer 路径 对应的dispatch方法
@@ -91,7 +128,11 @@ proto.handler = function(req, res, out) {
         } else {
           // 路由
           if (layer.route.match(req.method)) {
-            layer.handler(req, res, next);
+            req.params = layer.params;
+            // 如果是路由就执行(在执行之前需要将订阅的内容 进行执行)
+            proto.handle_param(layer,req,res,()=>{// out方法
+              layer.handler(req, res, next);
+            })
           } else {
             next();
           }

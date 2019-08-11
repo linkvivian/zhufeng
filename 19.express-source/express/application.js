@@ -16,6 +16,10 @@ Application.prototype.lazy_route = function(){
         this.router = new Router();
     }
 }
+Application.prototype.param = function(key,handler){
+    this.lazy_route();
+    this.router.param(key,handler);
+}
 Application.prototype.use = function(path,handler){
     this.lazy_route(); // 确保路由已经产生了
     // 交给路由来处理中间件的逻辑 
