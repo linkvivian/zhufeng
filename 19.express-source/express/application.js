@@ -9,7 +9,6 @@ function Application(){ // 提供一个创建应用的类
     //         res.end(`Cannot ${req.method} ${req.url}`)
     //     }}
     // ];
-
 }
 // 路由系统的懒加载
 Application.prototype.lazy_route = function(){
