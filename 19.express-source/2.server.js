@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('./express');
 const app = express(); 
 
 app.get('/',function(req,res,next){ // 可以对某个请求做一系列操作

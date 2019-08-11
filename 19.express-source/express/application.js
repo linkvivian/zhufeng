@@ -10,7 +10,7 @@ function Application(){ // 提供一个创建应用的类
     // ];
     this.router = new Router();
 }
-Application.prototype.get = function(path,handler){
+Application.prototype.get = function(path,...handler){
     // 自己不再处理放置路由的逻辑 交给路由自己去管理
     this.router.get(path,handler)
     // this.router.push({
